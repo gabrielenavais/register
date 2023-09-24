@@ -1,0 +1,48 @@
+from pacote.cadastro import Cadastro as Cad
+import sqlite3 as sql
+
+controle = True
+
+conexao = sql.connect("bancodedados.db")
+
+cursor = conexao.cursor()
+
+while controle:
+    print('1 - Cadastrar')
+    print('2 - Consultar por ID')
+    print('3 - Listar cadastros')
+    print('0 - Sair', end='\n\n')
+    
+    opcao = input('Informe uma opção: ')
+    
+    if opcao == '1':
+        nome = input('Informe o nome: ')
+        idade = input('Informe a idade: ')
+        
+        cursor.execute("INSERT INTO pessoas (nome, idade) VALUES (?, ? )", (nome, idade))
+    
+        conexao.commit()
+        usuario_cadastrado = cursor.execute("SELECT * FROM pessoas").fetchall()
+        print(f'Usuario ID {usuario_cadastrado[-1][0]} cadastrado com sucesso!')
+        
+        
+    elif opcao == '2':
+       dado = cursor.execute("SELECT nome, idade FROM pessoas WHERE id = ?", (3,)).fetchall()
+       
+       cadastro = Cad(dado[0][0], dado[0][1])
+       cadastro.mostrar_cadastros()
+            
+    elif opcao == '3':
+        dados = cursor.execute("SELECT * FROM pessoas").fetchall()
+        
+        for dado in dados:
+            cadastro = Cad(dado[1], dado[2])
+            cadastro.mostrar_cadastros()
+    
+    elif opcao == '0':
+        controle = False
+        
+    else:
+        print('Opção Inválida, tente novamente')
+        
+conexao.close
